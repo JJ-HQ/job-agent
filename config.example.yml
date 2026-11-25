@@ -1,0 +1,29 @@
+# Réglages de job-agent (aucun secret ici : les clés vont dans .env)
+
+recherche:
+  # À COMPLÉTER : intitulés recherchés (une recherche par intitulé et par lieu)
+  intitules: []
+  # À COMPLÉTER : villes et rayon en km autour de chaque ville
+  lieux: []
+  rayon_km: 30
+  contrats: tous          # tous | CDI | CDD | freelance | stage | alternance
+  teletravail: tous       # tous | oui | non
+  anciennete_max_jours: 14
+  mots_exclus: []         # une offre contenant un de ces mots est écartée
+
+sources:
+  adzuna: true
+  jooble: true
+  france_travail: false   # activé quand le module sera ajouté
+
+scoring:
+  ollama_url: "http://192.168.20.224:11434"
+  modele: "a-choisir"     # à fixer après comparaison (phase 1b)
+  offres_max_par_jour: 40
+
+resume:
+  meilleures_offres: 5
+  score_minimum: 50
+
+planification:
+  heure: "07:00"
