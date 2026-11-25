@@ -63,3 +63,28 @@ def test_prefilter_remote_modes():
     assert prefilter([oui, inc], base_cfg(teletravail="tous")["recherche"], NOW) == [oui, inc]
     assert prefilter([oui, inc], base_cfg(teletravail="oui")["recherche"], NOW) == [oui]
     assert prefilter([oui, inc], base_cfg(teletravail="non")["recherche"], NOW) == [inc]
+
+
+def test_title_rules_exclude_and_require():
+    from jobagent.filtre import title_ok
+    r = base_cfg(titre_exclu=["commercial", "immobilier", "responsable"],
+                 titre_requis=["technicien", "support", "informatique", "it"])["recherche"]
+    assert title_ok("Technicien support informatique N2 H/F", r)
+    assert title_ok("Techniciennes de proximité - support", r)           # début de mot
+    assert not title_ok("Support commercial immobilier", r)               # exclu l'emporte
+    assert not title_ok("Responsable support informatique", r)
+    assert not title_ok("Agent d'accueil", r)                             # aucun mot requis
+    assert not title_ok("Chargé de projet digital", r)                    # « it » = mot entier : pas dans « digital »
+    assert title_ok("Technicien IT", r)
+
+
+def test_title_rules_empty_means_no_filter():
+    from jobagent.filtre import title_ok
+    assert title_ok("N'importe quoi", base_cfg()["recherche"])
+
+
+def test_prefilter_applies_title_rules():
+    r = base_cfg(titre_exclu=["immobilier"])["recherche"]
+    bad = offer(title="Conseiller support immobilier", url="https://x.test/a")
+    ok = offer(source_id="2", title="Technicien support", url="https://x.test/b")
+    assert prefilter([bad, ok], r, NOW) == [ok]

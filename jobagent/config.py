@@ -14,6 +14,8 @@ DEFAULTS = {
         "teletravail": "tous",
         "anciennete_max_jours": 14,
         "mots_exclus": [],
+        "titre_exclu": [],
+        "titre_requis": [],
     },
     "sources": {"adzuna": True, "jooble": False, "france_travail": False},
     "scoring": {

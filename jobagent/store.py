@@ -98,9 +98,12 @@ class Store:
         self.db.commit()
         return cur.rowcount == 1
 
+    def nouvelles(self):
+        return [dict(r) for r in self.db.execute("SELECT * FROM offers WHERE statut='nouvelle'")]
+
     def since(self, iso_date):
         rows = self.db.execute(
-            "SELECT * FROM offers WHERE first_seen_at >= ? ORDER BY first_seen_at DESC, id DESC", (iso_date,)
+            "SELECT * FROM offers WHERE first_seen_at >= ? AND statut != 'écartée' ORDER BY first_seen_at DESC, id DESC", (iso_date,)
         ).fetchall()
         return [dict(r) for r in rows]
 

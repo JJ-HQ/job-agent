@@ -94,6 +94,20 @@ def cmd_resume(args):
     return 0
 
 
+def cmd_nettoyer(args):
+    """Écarte (statut « écartée ») les offres enregistrées qui ne respectent plus les règles de titre."""
+    cfg, _, db_path, _ = _load(args)
+    from .filtre import title_ok
+    store = Store(db_path)
+    removed = [r for r in store.nouvelles() if not title_ok(r["title"], cfg["recherche"])]
+    for r in removed:
+        store.set_statut(r["id"], "écartée")
+        if args.verbose:
+            print(f"écartée : {r['title']} — {r['company']}")
+    print(f"{len(removed)} offre(s) écartée(s).")
+    return 0
+
+
 def cmd_sources(args):
     cfg, env, db_path, _ = _load(args)
     status = Store(db_path).sources_status()
@@ -135,6 +149,9 @@ def main(argv=None):
     sub.add_parser("run", help="recherche, score, résumé Telegram").set_defaults(fn=cmd_run)
     sub.add_parser("check", help="vérifie l'installation").set_defaults(fn=cmd_check)
     sub.add_parser("sources", help="état et clés des sources").set_defaults(fn=cmd_sources)
+    p = sub.add_parser("nettoyer", help="écarte les offres enregistrées hors règles de titre")
+    p.add_argument("-v", "--verbose", action="store_true")
+    p.set_defaults(fn=cmd_nettoyer)
     sub.add_parser("test-telegram", help="envoie un message de test").set_defaults(fn=cmd_test_telegram)
     p = sub.add_parser("resume", help="renvoie le résumé des offres récentes")
     p.add_argument("--jours", type=int, default=2)

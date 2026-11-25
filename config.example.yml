@@ -14,7 +14,12 @@ recherche:
   contrats: tous          # tous | CDI | CDD | intérim | freelance | stage | alternance
   teletravail: tous       # tous | oui | non
   anciennete_max_jours: 14
-  mots_exclus: []         # une offre contenant un de ces mots est écartée
+  mots_exclus: []         # une offre contenant un de ces mots (titre ou texte) est écartée
+  # Règles sur le TITRE seulement (début de mot : « technicien » couvre techniciens, technicienne)
+  titre_exclu: ["commercial", "immobilier", "vendeur", "négociateur", "comptable", "manager", "directeur",
+                "responsable", "ingénieur", "architecte", "développeur", "chef de projet"]
+  titre_requis: ["technicien", "support", "helpdesk", "help desk", "informatique", "système", "réseau",
+                 "proximité", "maintenance", "assistance", "parc", "sav", "déploiement"]
 
 sources:
   adzuna: true

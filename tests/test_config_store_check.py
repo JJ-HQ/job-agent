@@ -78,3 +78,26 @@ def test_check_reports_ok_ko_without_secrets(tmp_path):
     assert results["Ollama"][0] is True and results["Telegram"][0] is True
     assert results["CV (data/cv.txt)"][0] is False
     assert "SECRET" not in str(results)
+
+
+def test_nettoyer_discards_offers_outside_title_rules(tmp_path, monkeypatch, capsys):
+    from jobagent.__main__ import main
+    cfg = tmp_path / "c.yml"
+    cfg.write_text('recherche:\n  intitules: [a]\n  lieux: [b]\n  titre_exclu: ["immobilier"]\n', encoding="utf-8")
+    monkeypatch.setenv("JOBAGENT_DATA", str(tmp_path / "data"))
+    s = Store(tmp_path / "data" / "jobs.db")
+    bad = s.add(Offer("a", "1", "https://x.test/1", "Commercial immobilier", "C", "L"), "2026-11-25T07:00:00Z")
+    good = s.add(Offer("a", "2", "https://x.test/2", "Technicien support", "C", "L"), "2026-11-25T07:00:00Z")
+    s.close()
+    assert main(["--config", str(cfg), "--env", str(tmp_path / ".env"), "nettoyer"]) == 0
+    assert "1 offre(s) écartée(s)" in capsys.readouterr().out
+    s = Store(tmp_path / "data" / "jobs.db")
+    assert s.get(bad)["statut"] == "écartée" and s.get(good)["statut"] == "nouvelle"
+
+
+def test_since_ignores_discarded_offers():
+    s = Store(":memory:")
+    a = s.add(Offer("a", "1", "https://x.test/1", "T1", "C1", "L"), "2026-11-25T07:00:00Z")
+    b = s.add(Offer("a", "2", "https://x.test/2", "T2", "C2", "L"), "2026-11-25T07:00:00Z")
+    s.set_statut(a, "écartée")
+    assert [r["id"] for r in s.since("2026-11-24T00:00:00Z")] == [b]
