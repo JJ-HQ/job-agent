@@ -20,6 +20,7 @@ DEFAULTS = {
         "ollama_url": "http://localhost:11434",
         "modele": "",
         "offres_max_par_jour": 40,
+        "profil_recherche": "",
     },
     "resume": {"meilleures_offres": 5, "score_minimum": 50},
 }

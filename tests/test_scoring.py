@@ -49,3 +49,19 @@ def test_prompt_truncates_long_inputs():
 
 def test_cv_hash_changes_with_cv():
     assert scoring.cv_hash("a") != scoring.cv_hash("b") and scoring.cv_hash("a") == scoring.cv_hash("a")
+
+
+def test_prompt_includes_profile_and_asks_short_answer():
+    p = scoring.build_prompt("cv", ROW, "technicien support N1/N2, pas de management")
+    assert "technicien support N1/N2" in p and "25 mots" in p and "points_forts" not in p
+    assert "Poste recherché" not in scoring.build_prompt("cv", ROW)
+
+
+def test_score_without_lists_is_valid():
+    r = scoring.parse_score('{"score": 70, "pourquoi": "ok"}')
+    assert r["points_forts"] == [] and r["manques"] == []
+
+
+def test_hash_changes_with_profile():
+    assert scoring.cv_hash("cv", "a") != scoring.cv_hash("cv", "b")
+    assert scoring.cv_hash("cv", "") == scoring.cv_hash("cv")

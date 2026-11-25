@@ -51,3 +51,13 @@ def test_redact_and_norm():
     assert redact("url https://j.test/api/CLE-SECRETE-9 fin", ["CLE-SECRETE-9"]) == "url https://j.test/api/*** fin"
     assert redact("abc", ["ab"]) == "abc"  # secrets trop courts ignorés
     assert norm("  Société   Été ! ") == "societe ete"
+
+
+def test_telegram_error_includes_description_but_not_token():
+    import pytest
+    from tests.helpers import FakeResponse
+
+    resp = FakeResponse({"ok": False, "description": "Bad Request: chat not found"}, status=400)
+    with pytest.raises(RuntimeError) as exc:
+        notify.send_telegram("TOKEN-SECRET-1", "42", "x", post=lambda *a, **k: resp)
+    assert "chat not found" in str(exc.value) and "TOKEN-SECRET-1" not in str(exc.value)

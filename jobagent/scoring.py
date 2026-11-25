@@ -11,19 +11,27 @@ CV_MAX = 6000
 DESC_MAX = 3000
 
 
-def cv_hash(cv_text):
-    return hashlib.sha256(cv_text.encode("utf-8")).hexdigest()[:16]
+PROMPT_VERSION = "2"  # à incrémenter quand le prompt change : les scores sont alors recalculés
 
 
-def build_prompt(cv_text, offer):
+def cv_hash(cv_text, profil=""):
+    """Empreinte de ce qui détermine un score : CV, poste recherché, version du prompt."""
+    blob = f"{PROMPT_VERSION}\n{(profil or '').strip()}\n{cv_text}"
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:16]
+
+
+def build_prompt(cv_text, offer, profil=""):
+    cible = f"\nPoste recherché par le candidat : {profil.strip()}\n" if profil and profil.strip() else ""
     return f"""Tu évalues l'adéquation entre un CV et une offre d'emploi.
 Réponds UNIQUEMENT par un objet JSON, sans texte autour, avec exactement ces clés :
-{{"score": <entier 0-100>, "pourquoi": "<2 phrases maximum>", "points_forts": ["..."], "manques": ["..."]}}
+{{"score": <entier 0-100>, "pourquoi": "<une phrase de 25 mots maximum>"}}
 
 Barème : 0-30 hors sujet ou très éloigné ; 31-50 faible ; 51-70 correct, des écarts notables ;
 71-85 bon ; 86-100 excellent. Base-toi uniquement sur le CV et l'offre, n'invente rien.
 Si la description de l'offre est trop courte pour juger, note prudemment et dis-le dans « pourquoi ».
-
+Pénalise nettement une offre dont le niveau ou le métier s'écarte du poste recherché (management, ingénieur,
+architecte, commercial, poste bien plus senior ou sans rapport avec l'informatique de terrain ou de support).
+{cible}
 === CV ===
 {cv_text[:CV_MAX]}
 
@@ -100,7 +108,7 @@ def score_offer(offer, cv_text, scoring_cfg, chat=ollama_chat):
     """Un essai, puis un second si la réponse est un JSON invalide."""
     if not scoring_cfg.get("modele"):
         raise ScoreError("scoring.modele non renseigné dans config.yml")
-    prompt = build_prompt(cv_text, offer)
+    prompt = build_prompt(cv_text, offer, scoring_cfg.get("profil_recherche", ""))
     last = None
     for _ in range(2):
         raw = chat(scoring_cfg["ollama_url"], scoring_cfg["modele"], prompt)

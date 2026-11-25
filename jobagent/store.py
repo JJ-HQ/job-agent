@@ -98,6 +98,12 @@ class Store:
         self.db.commit()
         return cur.rowcount == 1
 
+    def since(self, iso_date):
+        rows = self.db.execute(
+            "SELECT * FROM offers WHERE first_seen_at >= ? ORDER BY first_seen_at DESC, id DESC", (iso_date,)
+        ).fetchall()
+        return [dict(r) for r in rows]
+
     def latest(self, n):
         rows = self.db.execute(
             "SELECT * FROM offers ORDER BY first_seen_at DESC, id DESC LIMIT ?", (n,)

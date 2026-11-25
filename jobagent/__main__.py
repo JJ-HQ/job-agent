@@ -56,6 +56,44 @@ def cmd_check(args):
     return 1 if required_ko else 0
 
 
+def _telegram(env):
+    token, chat = env.get("TELEGRAM_BOT_TOKEN"), env.get("TELEGRAM_CHAT_ID")
+    if not (token and chat):
+        raise ConfigError("TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_ID manquant dans .env")
+    return functools.partial(notify.send_telegram, token, chat)
+
+
+def cmd_test_telegram(args):
+    _, env, _, _ = _load(args)
+    from .util import redact, secrets_from
+    try:
+        _telegram(env)("job-agent : message de test.")
+    except Exception as exc:
+        print("Échec :", redact(exc, secrets_from(env)))
+        return 1
+    print("Message de test envoyé.")
+    return 0
+
+
+def cmd_resume(args):
+    """Renvoie le résumé des offres vues ces N derniers jours (utile si l'envoi a échoué)."""
+    from datetime import timedelta
+    from .util import iso, redact, secrets_from, utcnow
+    cfg, env, db_path, _ = _load(args)
+    now = utcnow()
+    rows = Store(db_path).since(iso(now - timedelta(days=args.jours)))
+    text = notify.format_summary(now.strftime("%d/%m/%Y"), rows, cfg["resume"]["meilleures_offres"],
+                                 cfg["resume"]["score_minimum"], {}, [])
+    print(text)
+    try:
+        _telegram(env)(text)
+    except Exception as exc:
+        print("\nÉchec d'envoi :", redact(exc, secrets_from(env)))
+        return 1
+    print("\nRésumé envoyé.")
+    return 0
+
+
 def cmd_sources(args):
     cfg, env, db_path, _ = _load(args)
     status = Store(db_path).sources_status()
@@ -97,6 +135,10 @@ def main(argv=None):
     sub.add_parser("run", help="recherche, score, résumé Telegram").set_defaults(fn=cmd_run)
     sub.add_parser("check", help="vérifie l'installation").set_defaults(fn=cmd_check)
     sub.add_parser("sources", help="état et clés des sources").set_defaults(fn=cmd_sources)
+    sub.add_parser("test-telegram", help="envoie un message de test").set_defaults(fn=cmd_test_telegram)
+    p = sub.add_parser("resume", help="renvoie le résumé des offres récentes")
+    p.add_argument("--jours", type=int, default=2)
+    p.set_defaults(fn=cmd_resume)
     p = sub.add_parser("statut", help="change le statut d'une offre")
     p.add_argument("id", type=int)
     p.add_argument("statut", choices=STATUTS)

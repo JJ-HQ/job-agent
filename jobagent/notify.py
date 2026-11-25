@@ -63,7 +63,12 @@ def send_telegram(token, chat_id, text, post=requests.post):
     except requests.RequestException as exc:
         raise RuntimeError(f"Telegram injoignable : {type(exc).__name__}") from None
     if resp.status_code != 200:
-        raise RuntimeError(f"Telegram : HTTP {resp.status_code}")
+        detail = ""
+        try:
+            detail = str(resp.json().get("description", ""))[:120]
+        except (ValueError, AttributeError):
+            pass
+        raise RuntimeError(f"Telegram : HTTP {resp.status_code}" + (f" ({detail})" if detail else ""))
 
 
 def ping_healthcheck(url, ok, get=requests.get):

@@ -25,6 +25,8 @@ scoring:
   ollama_url: "http://192.168.20.224:11434"
   modele: ""              # À FIXER après comparaison de 2-3 modèles (voir SPEC.md, phase 1b)
   offres_max_par_jour: 40
+  # Une phrase décrivant le poste visé : sert à pénaliser les offres hors niveau (ingénieur, manager...)
+  profil_recherche: ""
 
 resume:
   meilleures_offres: 5

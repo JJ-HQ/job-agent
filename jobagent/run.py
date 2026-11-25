@@ -67,12 +67,14 @@ def run(cfg, env, store, *, sources=None, score_fn=None, send_fn=None, ping_fn=N
     elif score_fn is None:
         notes.append("Scoring non configuré : offres envoyées sans score")
     else:
-        h = scoring.cv_hash(cv_text)
+        h = scoring.cv_hash(cv_text, cfg["scoring"].get("profil_recherche", ""))
         since = iso(now - timedelta(days=cfg["recherche"]["anciennete_max_jours"]))
         failures = 0
         for row in store.to_score(h, cfg["scoring"]["offres_max_par_jour"], since):
             try:
+                t0 = time.monotonic()
                 store.set_score(row["id"], score_fn(row, cv_text), h)
+                log.info("score #%s en %.0f s", row["id"], time.monotonic() - t0)
                 scored += 1
                 failures = 0
             except Exception as exc:
