@@ -18,7 +18,7 @@ recherche:
 
 sources:
   adzuna: true
-  jooble: true
+  jooble: false           # couverture France insuffisante (essai réel du 25/11) : à ne réactiver que si l'API s'améliore
   france_travail: false   # module pas encore écrit
 
 scoring:

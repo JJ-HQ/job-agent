@@ -15,7 +15,7 @@ DEFAULTS = {
         "anciennete_max_jours": 14,
         "mots_exclus": [],
     },
-    "sources": {"adzuna": True, "jooble": True, "france_travail": False},
+    "sources": {"adzuna": True, "jooble": False, "france_travail": False},
     "scoring": {
         "ollama_url": "http://localhost:11434",
         "modele": "",
