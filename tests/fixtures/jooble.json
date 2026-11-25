@@ -1,0 +1,29 @@
+{
+  "totalCount": 2,
+  "jobs": [
+    {
+      "id": 998877,
+      "title": "Technicien support informatique N1",
+      "location": "Lens",
+      "snippet": "Prise d'appels, tickets, &amp; assistance <b>à distance</b>. Contrat en alternance possible.",
+      "salary": "",
+      "source": "exemple.fr",
+      "type": "",
+      "link": "https://jooble.org/desc/998877?ckey=support&rgn=1",
+      "company": "Exemple Informatique",
+      "updated": "2026-11-24T00:00:00.0000000"
+    },
+    {
+      "id": 998878,
+      "title": "Technicien support informatique N2 H/F",
+      "location": "Lens",
+      "snippet": "Support N2.",
+      "salary": "30 000 €",
+      "source": "autre.fr",
+      "type": "Full-time",
+      "link": "https://jooble.org/desc/998878",
+      "company": "EXEMPLE INFORMATIQUE",
+      "updated": "2026-11-23T00:00:00.0000000"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "count": 3,
+  "results": [
+    {
+      "id": "4501",
+      "title": "Technicien <strong>Support</strong> N2 H/F",
+      "company": {"display_name": "Exemple Informatique"},
+      "location": {"display_name": "Lens, Pas-de-Calais"},
+      "redirect_url": "https://www.adzuna.fr/land/ad/4501?se=abc&v=123",
+      "description": "Support utilisateurs niveau 2, Windows, Active Directory. CDI. Télétravail partiel possible.",
+      "created": "2026-11-24T08:30:00Z",
+      "contract_type": "permanent",
+      "salary_min": 28000,
+      "salary_max": 32000,
+      "salary_is_predicted": "0"
+    },
+    {
+      "id": "4502",
+      "title": "Technicien de proximité",
+      "company": {"display_name": "Services Nord"},
+      "location": {"display_name": "Béthune, Pas-de-Calais"},
+      "redirect_url": "https://www.adzuna.fr/land/ad/4502?se=def",
+      "description": "Interventions sur site chez les clients. Contrat CDD de 6 mois.",
+      "created": "2026-11-20T10:00:00Z",
+      "contract_type": "contract",
+      "salary_min": 24000,
+      "salary_max": 24000,
+      "salary_is_predicted": "1"
+    },
+    {
+      "id": "4503",
+      "title": "Sans lien",
+      "company": {"display_name": "X"},
+      "description": "offre sans redirect_url : à ignorer"
+    }
+  ]
+}
